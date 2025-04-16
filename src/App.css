@@ -6,45 +6,52 @@ body {
   color: #333;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   min-height: 100vh;
 }
 
 .container {
   width: 100%;
   max-width: 1000px;
-  padding: 40px 20px;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 h1 {
   text-align: center;
   color: #004080;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
+  font-size: 1.8rem;
 }
 
 h2 {
-  margin-top: 40px;
+  margin-top: 30px;
   color: #333;
+  font-size: 1.4rem;
+  text-align: center;
 }
 
 .form {
-  display: grid;
-  gap: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   background: #ffffff;
-  padding: 25px;
+  padding: 20px;
   border-radius: 10px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
 
 input,
 select,
 button {
-  padding: 10px 12px;
+  padding: 12px 14px;
   font-size: 1rem;
   border-radius: 6px;
   border: 1px solid #ccc;
   background-color: #fff;
   color: #333;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 select:required:invalid {
@@ -63,18 +70,50 @@ button:hover {
   background-color: #003060;
 }
 
+.form-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.reset-btn {
+  background-color: rgb(231, 63, 63);
+}
+
+.reset-btn:hover {
+  background-color: #ff0000;
+}
+
+.table-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+@media (min-width: 600px) {
+  .table-controls {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
 table {
   width: 100%;
+  overflow-x: auto;
   border-collapse: collapse;
-  margin-top: 20px;
+  margin-top: 10px;
   background: white;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+  font-size: 0.9rem;
 }
 
 th, td {
   padding: 10px;
   text-align: left;
   border-bottom: 1px solid #ddd;
+  white-space: nowrap;
 }
 
 th {
@@ -90,27 +129,23 @@ tr:hover {
   background-color: #f9f9f9;
 }
 
-button + button {
-  margin-left: 10px;
-}
+@media (max-width: 768px) {
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
 
-.form-buttons {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
+  .form {
+    padding: 15px;
+  }
 
-.table-controls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 15px 0;
-}
+  input,
+  select {
+    font-size: 0.95rem;
+  }
 
-.reset-btn {
-  background-color: rgb(231, 63, 63);
-}
-
-.reset-btn:hover {
-  background-color: #ff0000;
+  button {
+    font-size: 1rem;
+  }
 }
