@@ -6,52 +6,45 @@ body {
   color: #333;
   display: flex;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
   min-height: 100vh;
 }
 
 .container {
   width: 100%;
   max-width: 1000px;
-  padding: 20px;
-  box-sizing: border-box;
+  padding: 40px 20px;
 }
 
 h1 {
   text-align: center;
   color: #004080;
-  margin-bottom: 20px;
-  font-size: 1.8rem;
+  margin-bottom: 30px;
 }
 
 h2 {
-  margin-top: 30px;
+  margin-top: 40px;
   color: #333;
-  font-size: 1.4rem;
-  text-align: center;
 }
 
 .form {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  display: grid;
+  gap: 15px;
   background: #ffffff;
-  padding: 20px;
+  padding: 25px;
   border-radius: 10px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
 }
 
 input,
 select,
 button {
-  padding: 12px 14px;
+  padding: 10px 12px;
   font-size: 1rem;
   border-radius: 6px;
   border: 1px solid #ccc;
   background-color: #fff;
   color: #333;
-  width: 100%;
-  box-sizing: border-box;
 }
 
 select:required:invalid {
@@ -70,50 +63,18 @@ button:hover {
   background-color: #003060;
 }
 
-.form-buttons {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-.reset-btn {
-  background-color: rgb(231, 63, 63);
-}
-
-.reset-btn:hover {
-  background-color: #ff0000;
-}
-
-.table-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin: 15px 0;
-}
-
-@media (min-width: 600px) {
-  .table-controls {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
-}
-
 table {
   width: 100%;
-  overflow-x: auto;
   border-collapse: collapse;
-  margin-top: 10px;
+  margin-top: 20px;
   background: white;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
-  font-size: 0.9rem;
 }
 
 th, td {
   padding: 10px;
   text-align: left;
   border-bottom: 1px solid #ddd;
-  white-space: nowrap;
 }
 
 th {
@@ -129,23 +90,27 @@ tr:hover {
   background-color: #f9f9f9;
 }
 
-@media (max-width: 768px) {
-  table {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
-  }
+button + button {
+  margin-left: 10px;
+}
 
-  .form {
-    padding: 15px;
-  }
+.form-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
 
-  input,
-  select {
-    font-size: 0.95rem;
-  }
+.table-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 15px 0;
+}
 
-  button {
-    font-size: 1rem;
-  }
+.reset-btn {
+  background-color: rgb(231, 63, 63);
+}
+
+.reset-btn:hover {
+  background-color: #ff0000;
 }
