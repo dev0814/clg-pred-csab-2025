@@ -37,14 +37,10 @@ function App() {
     const userRank = parseInt(rank);
     if (isNaN(userRank)) return;
 
-    const selectedRoundNum = parseInt(round.replace(/[^0-9]/g, ""));
-
     const results = data.filter((row) => {
-      const rowRoundNum = parseInt(row["Round"].replace(/[^0-9]/g, ""));
-      if (rowRoundNum > selectedRoundNum) return false;
-
       const closingRank = parseInt(row["Closing Rank"]);
       const openingRank = parseInt(row["Opening Rank"]);
+      const validRound = row["Round"] === round;
       const validQuota = row["Quota"] === quota;
       const validCategory = row["Seat Type"] === category;
 
@@ -60,10 +56,10 @@ function App() {
         userRank <= closingRank;
 
       return (
+        validRound &&
         validQuota &&
         validCategory &&
         validGender &&
-        rowRoundNum <= selectedRoundNum &&
         isRankWithinBounds
       );
     });
@@ -108,7 +104,7 @@ function App() {
       `Category: ${category}`,
       `Gender: ${gender}`,
       `Quota: ${quota}`,
-      `Round (till): ${round}`
+      `Round: ${round}`
     ].join(" | ");
 
     const wrappedUserInfo = doc.splitTextToSize(userInfo, 190);
@@ -124,14 +120,13 @@ function App() {
       row["Quota"] || "-",
       row["Seat Type"] || "-",
       row["Gender"] || "-",
-      row["Closing Rank"] || "-",
-      row["Round"]
+      row["Closing Rank"] || "-"
     ]);
 
     autoTable(doc, {
       head: [[
         "Institute", "Program", "Fees", "Avg Salary", "Highest Salary",
-        "State", "Quota", "Category", "Gender", "Closing Rank", "Round"
+        "State", "Quota", "Category", "Gender", "Closing Rank"
       ]],
       body: tableBody,
       startY: 25 + wrappedUserInfo.length * 6,
@@ -155,7 +150,7 @@ function App() {
         <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Your Name" required />
         <input type="number" min="1" value={rank} onChange={(e) => setRank(e.target.value)} placeholder="Your JEE Rank" required />
         <select value={round} onChange={(e) => setRound(e.target.value)} required>
-          <option value="">Select Round (max)</option>
+          <option value="">Select Round</option>
           {rounds.sort().map((r, i) => <option key={i} value={r}>{r}</option>)}
         </select>
         <select value={category} onChange={(e) => setCategory(e.target.value)} required>
@@ -223,7 +218,6 @@ function App() {
                 <th>Category</th>
                 <th>Gender</th>
                 <th>Closing Rank</th>
-                <th>Round</th>
               </tr>
             </thead>
             <tbody>
@@ -239,7 +233,6 @@ function App() {
                   <td>{row["Seat Type"]}</td>
                   <td>{row["Gender"]}</td>
                   <td>{row["Closing Rank"]}</td>
-                  <td>{row["Round"]}</td>
                 </tr>
               ))}
             </tbody>
