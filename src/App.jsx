@@ -17,9 +17,11 @@ function App() {
   const [genders, setGenders] = useState([]);
   const [quotas, setQuotas] = useState([]);
   const [sortDirection, setSortDirection] = useState("asc");
+  const [programFilter, setProgramFilter] = useState("");
+  const [instituteFilter, setInstituteFilter] = useState("");
 
   useEffect(() => {
-    fetch("/csabr1r2.json")
+    fetch("/csaballr1r2.json")
       .then((res) => res.json())
       .then((json) => {
         setData(json);
@@ -32,19 +34,42 @@ function App() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const userRank = parseInt(rank);
 
     const results = data.filter((row) => {
       const closingRank = parseInt(row["Closing Rank"]);
       const validRound = row["Round"] === round;
-      const validRank = !isNaN(closingRank) && parseInt(rank) <= closingRank;
       const validCategory = row["Seat Type"] === category;
       const validGender = row["Gender"] === gender;
-      const validQuota = row["Quota"] === quota;
 
-      return validRound && validRank && validCategory && validGender && validQuota;
+      const isHSMatch =
+        quota === "HS" &&
+        row["Quota"] === "HS" &&
+        validRound &&
+        validCategory &&
+        validGender &&
+        !isNaN(closingRank) &&
+        userRank <= closingRank;
+
+      const isAIMatch =
+        row["Quota"] === "AI" &&
+        validRound &&
+        validCategory &&
+        validGender;
+
+      const isOpenMatch =
+        row["Seat Type"] === "OPEN" &&
+        validRound &&
+        validGender &&
+        !isNaN(closingRank) &&
+        userRank <= closingRank;
+
+      return isHSMatch || isAIMatch || isOpenMatch;
     });
 
     setFiltered(results);
+    setProgramFilter("");
+    setInstituteFilter("");
     setSortDirection("asc");
   };
 
@@ -56,6 +81,8 @@ function App() {
     setRank("");
     setUsername("");
     setFiltered([]);
+    setProgramFilter("");
+    setInstituteFilter("");
   };
 
   const sortClosingRank = () => {
@@ -71,7 +98,6 @@ function App() {
 
   const downloadPDF = () => {
     const doc = new jsPDF();
-
     doc.setFontSize(12);
     doc.text(`CSAB Predicted Colleges for ${username}`, 10, 10);
 
@@ -87,7 +113,7 @@ function App() {
     const wrappedUserInfo = doc.splitTextToSize(userInfo, 190);
     doc.text(wrappedUserInfo, 10, 18);
 
-    const tableBody = filtered.map((row) => [
+    const tableBody = displayedResults.map((row) => [
       row["Institute"],
       row["Academic Program Name"],
       (row["Total Fees"] || "-").replace(/₹/g, "Rs."),
@@ -114,46 +140,33 @@ function App() {
     doc.save(`CSAB_${username.replace(/\s+/g, "_")}_Predictions.pdf`);
   };
 
+  const displayedResults = filtered.filter((row) => {
+    const matchProgram = programFilter ? row["Academic Program Name"] === programFilter : true;
+    const matchInstitute = instituteFilter ? row["Institute"] === instituteFilter : true;
+    return matchProgram && matchInstitute;
+  });
+
   return (
     <div className="container">
       <h1>CSAB College Predictor 2025</h1>
       <form onSubmit={handleSubmit} className="form">
-        <input
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          placeholder="Your Name"
-          required
-        />
-        <input
-          type="number"
-          value={rank}
-          onChange={(e) => setRank(e.target.value)}
-          placeholder="Your JEE Rank"
-          required
-        />
+        <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Your Name" required />
+        <input type="number" min="1" value={rank} onChange={(e) => setRank(e.target.value)} placeholder="Your JEE Rank" required />
         <select value={round} onChange={(e) => setRound(e.target.value)} required>
           <option value="">Select Round</option>
-          {rounds.map((r, i) => (
-            <option key={i} value={r}>{r}</option>
-          ))}
+          {rounds.map((r, i) => <option key={i} value={r}>{r}</option>)}
         </select>
         <select value={category} onChange={(e) => setCategory(e.target.value)} required>
           <option value="">Select Category</option>
-          {categories.map((cat, i) => (
-            <option key={i} value={cat}>{cat}</option>
-          ))}
+          {categories.map((cat, i) => <option key={i} value={cat}>{cat}</option>)}
         </select>
         <select value={gender} onChange={(e) => setGender(e.target.value)} required>
           <option value="">Select Gender</option>
-          {genders.map((g, i) => (
-            <option key={i} value={g}>{g}</option>
-          ))}
+          {genders.map((g, i) => <option key={i} value={g}>{g}</option>)}
         </select>
         <select value={quota} onChange={(e) => setQuota(e.target.value)} required>
           <option value="">Select Quota</option>
-          {quotas.map((q, i) => (
-            <option key={i} value={q}>{q}</option>
-          ))}
+          {quotas.map((q, i) => <option key={i} value={q}>{q}</option>)}
         </select>
 
         <div className="form-buttons">
@@ -166,11 +179,35 @@ function App() {
         <>
           <h2>Predicted Colleges for {username}</h2>
           <div className="table-controls">
-            <button onClick={downloadPDF}>Download PDF</button>
-            <button onClick={sortClosingRank}>
-              Sort by Closing Rank {sortDirection === "asc" ? "↑" : "↓"}
-            </button>
+            <div className="button-row">
+              <button onClick={downloadPDF}>Download PDF</button>
+              <button onClick={sortClosingRank}>
+                Sort by Closing Rank {sortDirection === "asc" ? "↑" : "↓"}
+              </button>
+            </div>
+
+            <div className="filter-row">
+              <div className="filter-block">
+                <label>Filter by Program:</label>
+                <select value={programFilter} onChange={(e) => setProgramFilter(e.target.value)}>
+                  <option value="">All Programs</option>
+                  {[...new Set(filtered.map(row => row["Academic Program Name"]))].sort().map((p, i) => (
+                    <option key={i} value={p}>{p}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="filter-block">
+                <label>Filter by Institute:</label>
+                <select value={instituteFilter} onChange={(e) => setInstituteFilter(e.target.value)}>
+                  <option value="">All Institutes</option>
+                  {[...new Set(filtered.map(row => row["Institute"]))].sort().map((inst, i) => (
+                    <option key={i} value={inst}>{inst}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
           </div>
+
           <table>
             <thead>
               <tr>
@@ -187,7 +224,7 @@ function App() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((row, i) => (
+              {displayedResults.map((row, i) => (
                 <tr key={i}>
                   <td>{row["Institute"]}</td>
                   <td>{row["Academic Program Name"]}</td>

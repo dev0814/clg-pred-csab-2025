@@ -1,3 +1,4 @@
+/* Global Reset */
 body {
   margin: 0;
   padding: 0;
@@ -10,12 +11,14 @@ body {
   min-height: 100vh;
 }
 
+/* Container */
 .container {
   width: 100%;
   max-width: 1000px;
   padding: 40px 20px;
 }
 
+/* Headings */
 h1 {
   text-align: center;
   color: #004080;
@@ -27,6 +30,7 @@ h2 {
   color: #333;
 }
 
+/* Form Styling */
 .form {
   display: grid;
   gap: 15px;
@@ -47,22 +51,45 @@ button {
   color: #333;
 }
 
+/* Placeholder color for empty selects */
 select:required:invalid {
   color: #888;
 }
 
+/* Buttons */
 button {
   background-color: #004080;
   color: white;
   border: none;
-  transition: 0.3s ease-in-out;
   cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
 }
 
 button:hover {
   background-color: #003060;
 }
 
+button + button {
+  margin-left: 10px;
+}
+
+/* Reset button specific */
+.reset-btn {
+  background-color: rgb(231, 63, 63);
+}
+
+.reset-btn:hover {
+  background-color: #ff0000;
+}
+
+/* Form Buttons Group */
+.form-buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Table Styling */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -71,7 +98,8 @@ table {
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
 }
 
-th, td {
+th,
+td {
   padding: 10px;
   text-align: left;
   border-bottom: 1px solid #ddd;
@@ -90,27 +118,50 @@ tr:hover {
   background-color: #f9f9f9;
 }
 
-button + button {
-  margin-left: 10px;
-}
-
-.form-buttons {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
+/* Table Controls */
 .table-controls {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 15px;
   margin: 15px 0;
 }
 
-.reset-btn {
-  background-color: rgb(231, 63, 63);
+.button-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-.reset-btn:hover {
-  background-color: #ff0000;
+/* Filter Blocks */
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  align-items: flex-start;
+}
+
+.filter-block {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 250px;
+}
+
+.filter-block label {
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #004080;
+}
+
+.filter-block select {
+  padding: 10px 12px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  color: #333;
 }
