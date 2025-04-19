@@ -35,36 +35,37 @@ function App() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const userRank = parseInt(rank);
+    if (isNaN(userRank)) return;
+
+    const selectedRoundNum = parseInt(round.replace(/[^0-9]/g, ""));
 
     const results = data.filter((row) => {
+      const rowRoundNum = parseInt(row["Round"].replace(/[^0-9]/g, ""));
+      if (rowRoundNum > selectedRoundNum) return false;
+
       const closingRank = parseInt(row["Closing Rank"]);
-      const validRound = row["Round"] === round;
+      const openingRank = parseInt(row["Opening Rank"]);
+      const validQuota = row["Quota"] === quota;
       const validCategory = row["Seat Type"] === category;
-      const validGender = row["Gender"] === gender;
 
-      const isHSMatch =
-        quota === "HS" &&
-        row["Quota"] === "HS" &&
-        validRound &&
-        validCategory &&
-        validGender &&
+      const validGender =
+        gender === "Female-only (including Supernumerary)"
+          ? row["Gender"].includes("Female")
+          : row["Gender"] === "Gender-Neutral";
+
+      const isRankWithinBounds =
         !isNaN(closingRank) &&
+        !isNaN(openingRank) &&
+        userRank >= openingRank &&
         userRank <= closingRank;
 
-      const isAIMatch =
-        row["Quota"] === "AI" &&
-        validRound &&
+      return (
+        validQuota &&
         validCategory &&
-        validGender;
-
-      const isOpenMatch =
-        row["Seat Type"] === "OPEN" &&
-        validRound &&
         validGender &&
-        !isNaN(closingRank) &&
-        userRank <= closingRank;
-
-      return isHSMatch || isAIMatch || isOpenMatch;
+        rowRoundNum <= selectedRoundNum &&
+        isRankWithinBounds
+      );
     });
 
     setFiltered(results);
@@ -107,7 +108,7 @@ function App() {
       `Category: ${category}`,
       `Gender: ${gender}`,
       `Quota: ${quota}`,
-      `Round: ${round}`
+      `Round (till): ${round}`
     ].join(" | ");
 
     const wrappedUserInfo = doc.splitTextToSize(userInfo, 190);
@@ -123,13 +124,14 @@ function App() {
       row["Quota"] || "-",
       row["Seat Type"] || "-",
       row["Gender"] || "-",
-      row["Closing Rank"] || "-"
+      row["Closing Rank"] || "-",
+      row["Round"]
     ]);
 
     autoTable(doc, {
       head: [[
         "Institute", "Program", "Fees", "Avg Salary", "Highest Salary",
-        "State", "Quota", "Category", "Gender", "Closing Rank"
+        "State", "Quota", "Category", "Gender", "Closing Rank", "Round"
       ]],
       body: tableBody,
       startY: 25 + wrappedUserInfo.length * 6,
@@ -153,8 +155,8 @@ function App() {
         <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Your Name" required />
         <input type="number" min="1" value={rank} onChange={(e) => setRank(e.target.value)} placeholder="Your JEE Rank" required />
         <select value={round} onChange={(e) => setRound(e.target.value)} required>
-          <option value="">Select Round</option>
-          {rounds.map((r, i) => <option key={i} value={r}>{r}</option>)}
+          <option value="">Select Round (max)</option>
+          {rounds.sort().map((r, i) => <option key={i} value={r}>{r}</option>)}
         </select>
         <select value={category} onChange={(e) => setCategory(e.target.value)} required>
           <option value="">Select Category</option>
@@ -221,6 +223,7 @@ function App() {
                 <th>Category</th>
                 <th>Gender</th>
                 <th>Closing Rank</th>
+                <th>Round</th>
               </tr>
             </thead>
             <tbody>
@@ -236,6 +239,7 @@ function App() {
                   <td>{row["Seat Type"]}</td>
                   <td>{row["Gender"]}</td>
                   <td>{row["Closing Rank"]}</td>
+                  <td>{row["Round"]}</td>
                 </tr>
               ))}
             </tbody>
